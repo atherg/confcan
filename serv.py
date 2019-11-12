@@ -83,8 +83,6 @@ async def checkboard(request):
         #diagonales
         diags = [board[::-1,:].diagonal(i) for i in range(-board.shape[0]+1,board.shape[1])]
         diags.extend(board.diagonal(i) for i in range(board.shape[1]-1,-board.shape[0],-1))
-        # print(diags)
-        
         win = check_winner([n.tolist() for n in diags if len(n) >= 4])
         winner1, winner2 = get_win_status(win, winner1, winner2)
      
