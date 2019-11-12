@@ -1,8 +1,10 @@
 import requests
 import json
 import time
+import numpy as np
 
-base_url = 'http://0.0.0.0:8080'
+# base_url = 'http://0.0.0.0:8080'
+base_url = 'http://34.220.56.231:8080'
 HEADERS = {
     'user-agent': ('mazahacka'),
 }
@@ -32,6 +34,8 @@ def main():
             ]
         }
 
+    data = {"board": np.random.randint(3, size=(6, 7)).tolist()}
+#    print(data)
 
     check_board(data)
     

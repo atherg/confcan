@@ -86,7 +86,7 @@ async def checkboard(request):
         win = check_winner([n.tolist() for n in diags if len(n) >= 4])
         winner1, winner2 = get_win_status(win, winner1, winner2)
      
-        responseObj = {'status' : 'success', 'Final score. Black': winner1, 'Red': winner2}
+        responseObj = {'status' : 'success', 'Black': winner1, 'Red': winner2}
         return web.Response(text=json.dumps(responseObj), status=200)
 
     except Exception as e:
