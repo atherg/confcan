@@ -19,15 +19,16 @@ def check_winner(lst):
     return flag
 
 def get_win_status(win, winner1, winner2):
-    if win == 3:
-        winner1 = 0.5
-        winner2 = 0.5
-    elif win == 2:
-        winner1 = 0
-        winner2 = 1
-    elif win == 1:
-        winner1 = 1
-        winner2 = 0
+    if winner1 == 0 and winner2 == 0:
+        if win == 3:
+            winner1 = 0.5
+            winner2 = 0.5
+        elif win == 2:
+            winner1 = 0
+            winner2 = 1
+        elif win == 1:
+            winner1 = 1
+            winner2 = 0
     return winner1, winner2
     
   
