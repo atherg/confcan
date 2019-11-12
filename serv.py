@@ -9,13 +9,15 @@ def check_winner(lst):
     if lst.count(1) >= 4:
         groups = groupby(lst)
         tup_to_dict([(label, sum(1 for _ in group)) for label, group in groups], grp)
-        if grp[1][0] >= 4:
-            flag = flag + 1
+        for grpsz in grp[1]:
+            if grpsz >= 4:
+                flag = flag + 1
     if lst.count(2) >= 4:
         groups = groupby(lst)
         tup_to_dict([(label, sum(2 for _ in group)) for label, group in groups], grp)
-        if grp[2][0] >= 4:
-            flag = flag + 2
+        for grpsz in grp[2]:
+            if grpsz >= 4:
+                flag = flag + 2
     return flag
 
 def get_win_status(win, winner1, winner2):
