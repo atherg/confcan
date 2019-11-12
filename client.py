@@ -17,7 +17,7 @@ def check_board(data):
     if resp.status_code == 200:
         print(resp.text)
     else:
-        print('something went wrong. return code: ', resp.status_code, resp)
+        print('something went wrong. return code: ', resp.status_code, resp.text)
 
 
 def main():

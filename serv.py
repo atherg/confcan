@@ -70,7 +70,7 @@ async def checkboard(request):
             sanity += 1
         if sanity != len(unique):
             print('Elements have something weird.', unique)
-            responseObj = {'status' : 'failed', 'Elements have something weired': unique }
+            responseObj = {'status' : 'failed', 'Elements have something weired': str(unique) }
             return web.Response(text=json.dumps(responseObj), status=418)          
         #TODO. Implement elements consistancy check. Make sure it's only 0,1,2
 
