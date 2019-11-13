@@ -21,6 +21,8 @@ def check_winner(lst):
     return flag
 
 def get_win_status(win, winner1, winner2):
+    # if win != 0 and (winner1 != 0 or winner2 != 0):
+        # return 'Smth not right. Double win?'
     if winner1 == 0 and winner2 == 0:
         if win == 3:
             winner1 = 0.5
@@ -44,7 +46,7 @@ def column(matrix, i):
 
 async def handle(request):
     responseObj = {'status' : 'success'}
-    return web.Response(text=json.dumps(response_obj))
+    return web.Response(text=json.dumps(responseObj))
 
 async def checkboard(request):
     try:
@@ -55,24 +57,28 @@ async def checkboard(request):
         board = np.array(rawData['board'])
         print(board)
 
+        #check board size
         if board.shape != (n,m):
             print('Board size sucks.', board.shape)
             responseObj = {'status' : 'failed', 'Board shape is weird': board.shape }
             return web.Response(text=json.dumps(responseObj), status=418)
 
+        #check elements
         unique, counts = np.unique(board, return_counts=True)
-        sanity = 0
-        if 1 in unique:
-            sanity += 1
-        if 2 in unique:
-            sanity += 1
-        if 0 in unique:
-            sanity += 1
-        if sanity != len(unique):
+        elementsDict = dict(zip(unique, counts))
+        countCheck0 = elementsDict[0] if 0 in elementsDict else 0
+        countCheck1 = elementsDict[1] if 1 in elementsDict else 0
+        countCheck2 = elementsDict[2] if 2 in elementsDict else 0
+        if sum(counts) != countCheck0 + countCheck1 + countCheck2:
             print('Elements have something weird.', unique)
             responseObj = {'status' : 'failed', 'Elements have something weired': str(unique) }
             return web.Response(text=json.dumps(responseObj), status=418)          
-        #TODO. Implement elements consistancy check. Make sure it's only 0,1,2
+        if countCheck1 == countCheck2 or countCheck1 == countCheck2+1:
+            pass
+        else:
+            print('Black and Red checks are not matched', countCheck1, countCheck2)
+            responseObj = {'status' : 'failed. Black and Red checks are not matched', 'Black': str(countCheck1), 'Red': str(countCheck2)}
+            return web.Response(text=json.dumps(responseObj), status=418)  
 
         for i in range(max(m,n)):
             if i<len(board):
@@ -80,7 +86,16 @@ async def checkboard(request):
                 winner1, winner2 = get_win_status(win, winner1, winner2)
                 
             if i<len(board[0]):
-                win = check_winner(column(board,i))
+                #make sure that elemnts order in columns is correct
+                columnToLst = column(board,i)
+                colIndex = [index for index, value in enumerate(columnToLst) if value == 0]
+                for i in range(len(colIndex)):
+                    if columnToLst[i] != 0: 
+                        print('board is not consistant. Checkers are flying in the air')
+                        responseObj = {'status' : 'failed. board is not consistant. Checkers are flying in the air'}
+                        return web.Response(text=json.dumps(responseObj), status=418)  
+                    
+                win = check_winner(columnToLst)
                 winner1, winner2 = get_win_status(win, winner1, winner2)
 
         #diagonales
@@ -89,7 +104,17 @@ async def checkboard(request):
         win = check_winner([n.tolist() for n in diags if len(n) >= 4])
         winner1, winner2 = get_win_status(win, winner1, winner2)
      
-        responseObj = {'status' : 'success', 'Black': winner1, 'Red': winner2}
+        if winner1 !=0 or winner2 !=0:
+            responseObj = {'status' : 'success. Final score', 'Black': winner1, 'Red': winner2}
+        elif countCheck0 == 0:
+            responseObj = {'status' : 'success. Game over. Tie - no empty places to move'}
+        elif countCheck1 == countCheck2:
+            responseObj = {'status' : 'success. Game is on. Black\'s turn.'}
+        elif countCheck1 == countCheck2+1:
+            responseObj = {'status' : 'success. Game is on. Red\'s turn.'}
+        else:
+            responseObj = {'status' : 'fail. Unknown status, let devs know.'}
+            return web.Response(text=json.dumps(responseObj), status=418)
         return web.Response(text=json.dumps(responseObj), status=200)
 
     except Exception as e:
