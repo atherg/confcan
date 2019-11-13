@@ -60,7 +60,7 @@ async def checkboard(request):
         #check board size
         if board.shape != (n,m):
             print('Board size sucks.', board.shape)
-            responseObj = {'status' : 'failed', 'Board shape is weird': board.shape }
+            responseObj = {'status' : 'fail', 'desc': 'Board shape is weird '+str(board.shape) }
             return web.Response(text=json.dumps(responseObj), status=418)
 
         #check elements
@@ -71,13 +71,13 @@ async def checkboard(request):
         countCheck2 = elementsDict[2] if 2 in elementsDict else 0
         if sum(counts) != countCheck0 + countCheck1 + countCheck2:
             print('Elements have something weird.', unique)
-            responseObj = {'status' : 'failed', 'Elements have something weired': str(unique) }
+            responseObj = {'status' : 'fail', 'desc': 'Elements have something weired '+str(unique) }
             return web.Response(text=json.dumps(responseObj), status=418)          
         if countCheck1 == countCheck2 or countCheck1 == countCheck2+1:
             pass
         else:
             print('Black and Red checks are not matched', countCheck1, countCheck2)
-            responseObj = {'status' : 'failed. Black and Red checks are not matched', 'Black': str(countCheck1), 'Red': str(countCheck2)}
+            responseObj = {'status' : 'fail', 'desc': 'Black and Red checks are not matched', 'Black': str(countCheck1), 'Red': str(countCheck2)}
             return web.Response(text=json.dumps(responseObj), status=418)  
 
         for i in range(max(m,n)):
@@ -92,7 +92,7 @@ async def checkboard(request):
                 for i in range(len(colIndex)):
                     if columnToLst[i] != 0: 
                         print('board is not consistant. Checkers are flying in the air')
-                        responseObj = {'status' : 'failed. board is not consistant. Checkers are flying in the air'}
+                        responseObj = {'status' : 'fail', 'desc': 'board is not consistant. Checkers are flying in the air'}
                         return web.Response(text=json.dumps(responseObj), status=418)  
                     
                 win = check_winner(columnToLst)
@@ -105,20 +105,20 @@ async def checkboard(request):
         winner1, winner2 = get_win_status(win, winner1, winner2)
      
         if winner1 !=0 or winner2 !=0:
-            responseObj = {'status' : 'success. Final score', 'Black': winner1, 'Red': winner2}
+            responseObj = {'status' : 'success', 'desc': 'Final score', 'Black': winner1, 'Red': winner2}
         elif countCheck0 == 0:
-            responseObj = {'status' : 'success. Game over. Tie - no empty places to move'}
+            responseObj = {'status' : 'success', 'desc': 'Game over. Tie - no empty places to move'}
         elif countCheck1 == countCheck2:
-            responseObj = {'status' : 'success. Game is on. Black\'s turn.'}
+            responseObj = {'status' : 'success', 'desc': 'Game is on. Black\'s turn.'}
         elif countCheck1 == countCheck2+1:
-            responseObj = {'status' : 'success. Game is on. Red\'s turn.'}
+            responseObj = {'status' : 'success', 'desc': 'Game is on. Red\'s turn.'}
         else:
-            responseObj = {'status' : 'fail. Unknown status, let devs know.'}
+            responseObj = {'status' : 'fail', 'desc': 'Unknown status, let devs know.'}
             return web.Response(text=json.dumps(responseObj), status=418)
         return web.Response(text=json.dumps(responseObj), status=200)
 
     except Exception as e:
-        responseObj = {'status' : 'failed', 'reason': str(e) }
+        responseObj = {'status' : 'fail', 'reason': str(e) }
         return web.Response(text=json.dumps(responseObj), status=500)    
 
 
